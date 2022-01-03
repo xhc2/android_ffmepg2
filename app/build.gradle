@@ -1,0 +1,68 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.0"
+
+    defaultConfig {
+        applicationId "com.example.xhc.android_ffmepg2"
+        minSdkVersion 19
+        targetSdkVersion 30
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters "armeabi-v7a"
+            cFlags "-march=armv7-a -mfloat-abi=softfp -mfpu=neon  -Os -fPIC -DANDROID -Wfatal-errors -Wno-deprecated -DBIONIC_IOCTL_NO_SIGNEDNESS_OVERLOAD"
+        }
+        externalNativeBuild {
+            cmake {
+                cppFlags "-D__thumb__ -fexceptions -frtti"
+//                -std=c99
+                cFlags "-march=armv7-a -mfloat-abi=softfp -mfpu=neon  -Os -fPIC -DANDROID -Wfatal-errors -Wno-deprecated -DBIONIC_IOCTL_NO_SIGNEDNESS_OVERLOAD"
+//                   abiFilters "armeabi-v7a"
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+            version "3.10.2"
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+}
+//pwd==/home/ffmpeg/ffmpeg-4.0.6/ffmpeg-4.0.6
+//ARCH==arm
+//PREFIX==/home/ffmpeg/ffmpeg-4.0.6/ffmpeg-4.0.6/dist/ffmpeg-4.0.6/armeabi-v7a/
+//        HOST==arm-linux-androideabi
+//SYSROOT=/home/android_ndk/android-ndk-r15c/platforms/android-21/arch-arm
+//CFALGS=-march=armv7-a -mfloat-abi=softfp -mfpu=neon
+//CFALGS=-march=armv7-a -mfloat-abi=softfp -mfpu=neon
+//TOOLCHAIN==/home/android_ndk/android-ndk-r15c/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64
+//CROSS_PREFIX=/home/android_ndk/android-ndk-r15c/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/arm-linux-androideabi-
+//        install prefix            /home/ffmpeg/ffmpeg-4.0.6/ffmpeg-4.0.6/dist/ffmpeg-4.0.6/armeabi-v7a/
+//        source path               .
+//        C compiler                /home/android_ndk/android-ndk-r15c/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin/arm-linux-androideabi-gcc
+//C library                 bionic
+//host C compiler           gcc
+//host C library            glibc
+//ARCH                      arm (armv7-a)
+//big-endian                no

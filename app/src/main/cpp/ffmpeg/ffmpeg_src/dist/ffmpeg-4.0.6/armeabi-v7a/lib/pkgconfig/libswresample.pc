@@ -1,0 +1,14 @@
+prefix=/Users/mrx/Desktop/android_ffmpeg/android_ffmpeg2/app/src/main/cpp/ffmpeg/ffmpeg_src/dist/ffmpeg-4.0.6/armeabi-v7a/
+exec_prefix=${prefix}
+libdir=/Users/mrx/Desktop/android_ffmpeg/android_ffmpeg2/app/src/main/cpp/ffmpeg/ffmpeg_src/dist/ffmpeg-4.0.6/armeabi-v7a//lib
+includedir=/Users/mrx/Desktop/android_ffmpeg/android_ffmpeg2/app/src/main/cpp/ffmpeg/ffmpeg_src/dist/ffmpeg-4.0.6/armeabi-v7a//include
+
+Name: libswresample
+Description: FFmpeg audio resampling library
+Version: 3.1.100
+Requires: 
+Requires.private: libavutil >= 56.14.100
+Conflicts:
+Libs: -L${libdir}  -lswresample 
+Libs.private: -lm
+Cflags: -I${includedir}
