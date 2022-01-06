@@ -16,13 +16,28 @@ message(AUTHOR_WARNING "++++++++++++++++ main MY_INCLUDE_PATH  ${CMAKE_SOURCE_DI
 add_subdirectory(${CMAKE_SOURCE_DIR}/ffmpeg/ffmpeg_src/ ffmpeg.out)
 include_directories(
         ${CMAKE_SOURCE_DIR}/ffmpeg/ffmpeg_src/
+        ${CMAKE_SOURCE_DIR}/
 )
 
 add_library(
              native-lib
 
              SHARED
-
+        AudioPlayer.cpp
+        DecodeMyAudioThread.cpp
+        DecodeVideoThread.cpp
+        Mp4Player.cpp
+        MyData.cpp
+        MyThread.cpp
+        NewAudioPlayer.cpp
+        ReadAvPacket.cpp
+        sonic.cpp
+        SonicRead.cpp
+        Utils.cpp
+        YuvPlayer.cpp
+        CallJava.cpp
+        Notify.cpp
+        SeekVideo.cpp
              native-lib.cpp )
 
 
