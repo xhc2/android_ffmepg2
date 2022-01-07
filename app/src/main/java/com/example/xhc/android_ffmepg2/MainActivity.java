@@ -14,12 +14,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Example of a call to a native method
-        TextView tv = findViewById(R.id.sample_text);
 
         Intent intent =new Intent(MainActivity.this , Mp4PlayerActivity.class);
         intent.putExtra("path" , "http://tudou.mrxxhc.cn:8080/ts/input.mp4");
         startActivity(intent);
+        finish();
     }
 
     /**

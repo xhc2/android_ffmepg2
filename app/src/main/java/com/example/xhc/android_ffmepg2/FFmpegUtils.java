@@ -40,7 +40,12 @@ public class FFmpegUtils {
     public static native int getVideoWidth();
     public static native int getVideoHeight();
 
-
+    //给本地回调，是在jni层调用的方法
+    public static void nativeNotify(String str){
+        for(Lis lis : listNativeNotify){
+            lis.nativeNotify(str);
+        }
+    }
     //判断本地回调的数据是否是用来显示的
     public static boolean isShowToastMsg(String msg){
         if(TextUtils.isEmpty(msg)){
