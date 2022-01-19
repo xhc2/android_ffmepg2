@@ -25,7 +25,7 @@
  * Apple HTTP Live Streaming demuxer
  * http://tools.ietf.org/html/draft-pantos-http-live-streaming
  */
-
+//http://220.161.87.62:8800/hls/0/index.m3u8
 #include "libavformat/http.h"
 #include "libavutil/avstring.h"
 #include "libavutil/avassert.h"
@@ -917,6 +917,12 @@ static int parse_playlist(HLSContext *c, const char *url,
     if (pls)
         pls->last_load_time = av_gettime_relative();
 
+    if(pls){
+        av_log(NULL , AV_LOG_INFO , "xhc parse url after %d , %d" , pls->n_segments , pls->cur_seq_no);
+        for (int i = 0; i < pls->n_segments; i++) {
+            av_log(NULL , AV_LOG_INFO , " xhc parse url after %s " , pls->segments[i]->url);
+        }
+    }
 fail:
     av_free(new_url);
     if (close_in)
@@ -1410,10 +1416,12 @@ restart:
 
 reload:
         reload_count++;
-        if (reload_count > c->max_reload)
+        if (reload_count > c->max_reload) //xhc
             return AVERROR_EOF;
         if (!v->finished &&
             av_gettime_relative() - v->last_load_time >= reload_interval) {
+            //这里是直播，然后加载新的url，
+            av_log(NULL ,AV_LOG_WARNING , " xhc live stream add playsec ");
             if ((ret = parse_playlist(c, v->url, v, NULL)) < 0) {
                 if (ret != AVERROR_EXIT)
                     av_log(v->parent, AV_LOG_WARNING, "Failed to reload playlist %d\n",
@@ -1431,6 +1439,7 @@ reload:
                    v->start_seq_no - v->cur_seq_no);
             v->cur_seq_no = v->start_seq_no;
         }
+        //这地方也要注意，如果点播那么start_seq_no 又是从0开始了。
         if (v->cur_seq_no >= v->start_seq_no + v->n_segments) {
             if (v->finished)
                 return AVERROR_EOF;
@@ -1442,12 +1451,12 @@ reload:
             /* Enough time has elapsed since the last reload */
             goto reload;
         }
-
+// 这后面是是在干嘛
         v->input_read_done = 0;
         seg = current_segment(v);
 
         /* load/update Media Initialization Section, if any */
-        ret = update_init_section(v, seg);
+        ret = update_init_section(v, seg);//将当前的ts seg 网络io打开
         if (ret)
             return ret;
 
@@ -1493,7 +1502,7 @@ reload:
             v->input_next_requested = 1;
         }
     }
-
+    //data 数据正式读取
     if (v->init_sec_buf_read_offset < v->init_sec_data_len) {
         /* Push init section out first before first actual segment */
         int copy_size = FFMIN(v->init_sec_data_len - v->init_sec_buf_read_offset, buf_size);
@@ -1882,7 +1891,7 @@ static int hls_read_header(AVFormatContext *s)
         if (pls->n_segments == 0)
             continue;
 
-        pls->cur_seq_no = select_cur_seq_no(c, pls);
+        pls->cur_seq_no = select_cur_seq_no(c, pls); //这里是选择播放的play？xhc
         highest_cur_seq_no = FFMAX(highest_cur_seq_no, pls->cur_seq_no);
     }
 
@@ -2128,6 +2137,7 @@ static int hls_read_packet(AVFormatContext *s, AVPacket *pkt)
                     }
 
                     tb = get_timebase(pls);
+                    //这里已经播放到指定位置，break出去开始正常播放
                     ts_diff = av_rescale_rnd(pls->pkt.dts, AV_TIME_BASE,
                                             tb.den, AV_ROUND_DOWN) -
                             pls->seek_timestamp;
@@ -2263,7 +2273,7 @@ static int hls_read_seek(AVFormatContext *s, int stream_index,
     }
     /* check if the timestamp is valid for the playlist with the
      * specified stream index */
-    if (!seek_pls || !find_timestamp_in_playlist(c, seek_pls, seek_timestamp, &seq_no))
+    if (!seek_pls || !find_timestamp_in_playlist(c, seek_pls, seek_timestamp, &seq_no)) //这里就是找对应playlist的播放的ts
         return AVERROR(EIO);
 
     /* set segment now so we do not need to search again below */

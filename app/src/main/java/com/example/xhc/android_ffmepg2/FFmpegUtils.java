@@ -27,6 +27,8 @@ public class FFmpegUtils {
         void nativeNotify(String str);
     }
 
+    public static native int test();
+
     //下面是做音视频播放器的
     public static native int initMp4Play(String path, Object glSurfaceView);
     public static native float getDuration();
