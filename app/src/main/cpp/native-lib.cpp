@@ -6,6 +6,7 @@ extern "C"{
 #include "libavformat/avformat.h"
 #include "libavutil/avstring.h"
 }
+
 extern "C" JNIEXPORT jstring JNICALL
 Java_com_example_xhc_android_1ffmepg2_MainActivity_stringFromJNI(
         JNIEnv* env,
