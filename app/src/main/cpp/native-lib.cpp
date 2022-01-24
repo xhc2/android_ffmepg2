@@ -25,12 +25,6 @@ CallJava *cj = NULL;
 
 
 void custom_log(void *ptr, int level, const char *fmt, va_list vl) {
-//    FILE *fp = fopen("sdcard/FFmpeg/ffmpeg_log.txt", "a+");
-//    if (fp) {
-//        vfprintf(fp, fmt, vl);
-//        fflush(fp);
-//        fclose(fp);
-//    }
     char str[1024 * 2];
     vsprintf(str , fmt , vl);
     LOGFFMPEG("%s", str);
