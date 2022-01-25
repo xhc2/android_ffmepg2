@@ -38,7 +38,8 @@ add_library(
         CallJava.cpp
         Notify.cpp
         SeekVideo.cpp
-             native-lib.cpp )
+        CPP_shareptr.cpp
+        native-lib.cpp )
 
 
 find_library( # Sets the name of the path variable.

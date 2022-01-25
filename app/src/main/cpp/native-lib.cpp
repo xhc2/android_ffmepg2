@@ -1,6 +1,8 @@
 #include <jni.h>
 #include <string>
 #include "Mp4Player.h"
+#include "CPP_shareptr.h"
+
 extern "C"{
 #include "test.h"
 #include "libavformat/avformat.h"
@@ -180,11 +182,14 @@ extern "C"
 JNIEXPORT jint JNICALL
 Java_com_example_xhc_android_1ffmepg2_FFmpegUtils_test(JNIEnv *env, jclass clazz) {
     // TODO: implement test()
-    const char *url = "http:192.168.98.147:8080/hls/play.m3u8?livemode=2&starttime=20220112T002651Z&other=test";
+    CPP_shareptr *c = new CPP_shareptr();
+    c->lumada2();
 
 
+//    delete c;
 
 
+//    const char *url = "http:192.168.98.147:8080/hls/play.m3u8?livemode=2&starttime=20220112T002651Z&other=test";
 //    const char* date = "20280112T002653Z";
 //    char *startTime = av_stristr(url , "starttime=");
 //    LOGE(" %d " , startTime - url);
