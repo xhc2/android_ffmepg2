@@ -1059,8 +1059,8 @@ static int mpegts_push_data(MpegTSFilter *filter,
                     pes->header[2] == 0x01) {
                     /* it must be an MPEG-2 PES stream */
                     code = pes->header[3] | 0x100;
-                    av_log(pes->stream, AV_LOG_TRACE, "pid=%x pes_code=%#x\n", pes->pid,
-                            code);
+                   /* av_log(pes->stream, AV_LOG_TRACE, "pid=%x pes_code=%#x\n", pes->pid,
+                            code);*/
                     pes->stream_id = pes->header[3];
 
                     if ((pes->st && pes->st->discard == AVDISCARD_ALL &&
@@ -1976,7 +1976,7 @@ static void pmt_cb(MpegTSFilter *filter, const uint8_t *section, int section_len
     Mp4Descr mp4_descr[MAX_MP4_DESCR_COUNT] = { { 0 } };
     int i;
 
-    av_log(ts->stream, AV_LOG_TRACE, "PMT: len %i\n", section_len);
+//    av_log(ts->stream, AV_LOG_TRACE, "PMT: len %i\n", section_len);
     hex_dump_debug(ts->stream, section, section_len);
 
     p_end = section + section_len - 4;

@@ -117,8 +117,8 @@ static int decode_picture_timing(H264SEIPictureTiming *h, GetBitContext *gb,
             }
         }
 
-        av_log(logctx, AV_LOG_DEBUG, "ct_type:%X pic_struct:%d\n",
-               h->ct_type, h->pic_struct);
+        /*av_log(logctx, AV_LOG_DEBUG, "ct_type:%X pic_struct:%d\n",
+               h->ct_type, h->pic_struct);*/
     }
 
     h->present = 1;

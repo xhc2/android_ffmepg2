@@ -46,7 +46,9 @@
 
 #define MPEG_TIME_BASE 90000
 #define MPEG_TIME_BASE_Q (AVRational){1, MPEG_TIME_BASE}
-
+typedef struct AVIOInternal {
+    URLContext *h;
+} AVIOInternal;
 /*
  * An apple http stream consists of a playlist with media segment files,
  * played sequentially. There may be several playlists with the same
@@ -719,9 +721,10 @@ static int parse_playlist(HLSContext *c, const char *url,
     char tmp_str[MAX_URL_SIZE];
     struct segment *cur_init_section = NULL;
     int is_http = av_strstart(url, "http", NULL);
-
+    av_log(0 , AV_LOG_ERROR , "xhc parse_playlist start %s ，aviocontext %p" , url , in);
     if (is_http && !in && c->http_persistent && c->playlist_pb) {
         in = c->playlist_pb;
+        av_log(0 , AV_LOG_ERROR , "xhc parse_playlist  open_url_keepalive");
         ret = open_url_keepalive(c->ctx, &c->playlist_pb, url);
         if (ret == AVERROR_EXIT) {
             return ret;
@@ -748,8 +751,10 @@ static int parse_playlist(HLSContext *c, const char *url,
         if (c->http_persistent)
             av_dict_set(&opts, "multiple_requests", "1", 0);
 
+        av_log(0 , AV_LOG_ERROR , "[%d]xhc parse_playlist  io_open" , __LINE__);
         ret = c->ctx->io_open(c->ctx, &in, url, AVIO_FLAG_READ, &opts);
         av_dict_free(&opts);
+        av_log(0 , AV_LOG_ERROR , " http io_open %d " , ret);
         if (ret < 0)
             return ret;
 
@@ -758,7 +763,10 @@ static int parse_playlist(HLSContext *c, const char *url,
         else
             close_in = 1;
     }
-
+    if(c->ctx->pb != NULL && c->ctx->pb->opaque != NULL){
+        AVIOInternal *internal = (AVIOInternal *)c->ctx->pb->opaque;
+        av_log(0 , AV_LOG_ERROR , "[%d]xhc test %s , adres %p" , __LINE__ , internal->h->filename , internal->h);
+    }
     if (av_opt_get(in, "location", AV_OPT_SEARCH_CHILDREN, &new_url) >= 0)
         url = new_url;
 
@@ -918,10 +926,10 @@ static int parse_playlist(HLSContext *c, const char *url,
         pls->last_load_time = av_gettime_relative();
 
     if(pls){
-        av_log(NULL , AV_LOG_INFO , "xhc parse url after %d , %d" , pls->n_segments , pls->cur_seq_no);
-        for (int i = 0; i < pls->n_segments; i++) {
+        //av_log(NULL , AV_LOG_INFO , "xhc parse url after %d , %d" , pls->n_segments , pls->cur_seq_no);
+        /*for (int i = 0; i < pls->n_segments; i++) {
             av_log(NULL , AV_LOG_INFO , " xhc parse url after %s " , pls->segments[i]->url);
-        }
+        }*/
     }
 fail:
     av_free(new_url);
@@ -1330,7 +1338,7 @@ static int update_init_section(struct playlist *pls, struct segment *seg)
 
     return 0;
 }
-
+//最后一个的duration
 static int64_t default_reload_interval(struct playlist *pls)
 {
     return pls->n_segments > 0 ?
@@ -1420,8 +1428,8 @@ reload:
             return AVERROR_EOF;
         if (!v->finished &&
             av_gettime_relative() - v->last_load_time >= reload_interval) {
-            //这里是直播，然后加载新的url，
-            av_log(NULL ,AV_LOG_WARNING , " xhc live stream add playsec ");
+            //这里是直播，然后加载新的url，这里就是加载间隔逻辑
+            av_log(NULL ,AV_LOG_WARNING , " xhc live stream add playsec %s" , v->url);
             if ((ret = parse_playlist(c, v->url, v, NULL)) < 0) {
                 if (ret != AVERROR_EXIT)
                     av_log(v->parent, AV_LOG_WARNING, "Failed to reload playlist %d\n",
@@ -1807,7 +1815,7 @@ static int hls_read_header(AVFormatContext *s)
     c->first_packet = 1;
     c->first_timestamp = AV_NOPTS_VALUE;
     c->cur_timestamp = AV_NOPTS_VALUE;
-
+    av_log(0 , AV_LOG_ERROR , " hls_read_header ");
     if (u) {
         // get the previous user agent & set back to null if string size is zero
         update_options(&c->user_agent, "user_agent", u);
@@ -1841,6 +1849,7 @@ static int hls_read_header(AVFormatContext *s)
     if (c->n_playlists > 1 || c->playlists[0]->n_segments == 0) {
         for (i = 0; i < c->n_playlists; i++) {
             struct playlist *pls = c->playlists[i];
+            //有分辨率的那种。
             if ((ret = parse_playlist(c, pls->url, pls, NULL)) < 0)
                 goto fail;
         }

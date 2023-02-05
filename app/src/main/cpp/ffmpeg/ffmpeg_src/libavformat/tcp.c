@@ -76,7 +76,8 @@ static int tcp_open(URLContext *h, const char *uri, int flags)
     char hostname[1024],proto[1024],path[1024];
     char portstr[10];
     s->open_timeout = 5000000;
-
+    av_log(0, AV_LOG_ERROR , "tcp_open start %p" , h);
+//    av_strlcpy(h->ipAddr , "xhc helloworld" , strlen("xhc helloworld"));
     av_url_split(proto, sizeof(proto), NULL, 0, hostname, sizeof(hostname),
         &port, path, sizeof(path), uri);
     if (strcmp(proto, "tcp"))
@@ -120,7 +121,17 @@ static int tcp_open(URLContext *h, const char *uri, int flags)
                hostname, gai_strerror(ret));
         return AVERROR(EIO);
     }
+    struct addrinfo *testAi = ai;
+    do{
+        if(testAi->ai_family == AF_INET){
+            inet_ntop(AF_INET  , (const void*)testAi->ai_addr->sa_data , h->ipAddr , testAi->ai_addrlen) ;
+        }
+        else{
 
+        }
+        av_log(0 , AV_LOG_ERROR , " getip address %s" ,  h->ipAddr );
+        testAi = testAi->ai_next;
+    }while(testAi != NULL);
     cur_ai = ai;
 
  restart:
@@ -178,7 +189,7 @@ static int tcp_open(URLContext *h, const char *uri, int flags)
 
     h->is_streamed = 1;
     s->fd = fd;
-
+    av_log(0, AV_LOG_ERROR , "tcp_open end");
     freeaddrinfo(ai);
     return 0;
 

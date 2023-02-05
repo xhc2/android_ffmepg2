@@ -195,7 +195,7 @@ static int http_open_cnx_internal(URLContext *h, AVDictionary **options)
     char buf[1024], urlbuf[MAX_URL_SIZE];
     int port, use_proxy, err, location_changed = 0;
     HTTPContext *s = h->priv_data;
-
+    av_log(0 , AV_LOG_ERROR , "http_open_cnx_internal url location %s" ,  s->location);
     av_url_split(proto, sizeof(proto), auth, sizeof(auth),
                  hostname, sizeof(hostname), &port,
                  path1, sizeof(path1), s->location);
@@ -232,6 +232,7 @@ static int http_open_cnx_internal(URLContext *h, AVDictionary **options)
     ff_url_join(buf, sizeof(buf), lower_proto, NULL, hostname, port, NULL);
 
     if (!s->hd) {
+        av_log(0 , AV_LOG_ERROR , "ffurl_open_whitelist url %s" , buf);
         err = ffurl_open_whitelist(&s->hd, buf, AVIO_FLAG_READ_WRITE,
                                    &h->interrupt_callback, options,
                                    h->protocol_whitelist, h->protocol_blacklist, h);
@@ -262,7 +263,7 @@ redo:
     location_changed = http_open_cnx_internal(h, options);
     if (location_changed < 0)
         goto fail;
-
+    av_log(0 , AV_LOG_ERROR , "xhc http code %d" , s->http_code );
     attempts++;
     if (s->http_code == 401) {
         if ((cur_auth_type == HTTP_AUTH_NONE || s->auth_state.stale) &&
@@ -284,6 +285,7 @@ redo:
          s->http_code == 303 || s->http_code == 307) &&
         location_changed == 1) {
         /* url moved, get next */
+        av_log(0 , AV_LOG_ERROR , " REDIRECT XHC");
         ffurl_closep(&s->hd);
         if (redirects++ >= MAX_REDIRECTS)
             return AVERROR(EIO);
@@ -536,7 +538,7 @@ static int http_open(URLContext *h, const char *uri, int flags,
         return AVERROR(ENOMEM);
     if (options)
         av_dict_copy(&s->chained_options, *options, 0);
-
+    av_log(0 , AV_LOG_ERROR , " http_open %s  , adress %p" , s->location , h);
     if (s->headers) {
         int len = strlen(s->headers);
         if (len < 2 || strcmp("\r\n", s->headers + len - 2)) {
@@ -557,7 +559,8 @@ static int http_open(URLContext *h, const char *uri, int flags,
     ret = http_open_cnx(h, options);
     if (ret < 0)
         av_dict_free(&s->chained_options);
-    return ret;
+    av_log(0 , AV_LOG_ERROR , " http open hd->name %s , ipaddr %s , adress %p" , s->hd->prot->name , s->hd->ipAddr , s->hd);
+    return 0;
 }
 
 static int http_accept(URLContext *s, URLContext **c)

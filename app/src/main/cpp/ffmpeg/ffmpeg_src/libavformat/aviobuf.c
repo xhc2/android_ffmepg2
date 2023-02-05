@@ -140,6 +140,7 @@ AVIOContext *avio_alloc_context(
     AVIOContext *s = av_malloc(sizeof(AVIOContext));
     if (!s)
         return NULL;
+    av_log(0 , AV_LOG_ERROR , "avio_alloc_context %p , opaque urlcontext %p" , s , opaque);
     ffio_init_context(s, buffer, buffer_size, write_flag, opaque,
                   read_packet, write_packet, seek);
     return s;
