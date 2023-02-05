@@ -13,11 +13,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        FFmpegUtils.test();
-//        Intent intent =new Intent(MainActivity.this , Mp4PlayerActivity.class);
-//        intent.putExtra("path" , "http://220.161.87.62:8800/hls/0/index.m3u8");
-//        startActivity(intent);
-//        finish();
+//        FFmpegUtils.test();
+        Intent intent =new Intent(MainActivity.this , Mp4PlayerActivity.class);
+        intent.putExtra("path" , "http://devimages.apple.com/iphone/samples/bipbop/gear1/prog_index.m3u8");
+        startActivity(intent);
+        finish();
     }
 
     /**
